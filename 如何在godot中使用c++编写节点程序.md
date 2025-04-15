@@ -301,34 +301,34 @@
 <p>在文件夹左上角界面点"查看",点"选项,点"更改文件夹和搜索选项",弹出来的窗口中点"查看","高级设置"栏往下划,取消勾选"隐藏已知文件类型的拓展名",右下角点"应用",然后右下角点"确定"
 <p>打开刚才"空文件夹"里面的src文件夹,右键界面,选择新建,选择文本文档,打开这个文本文档,复制以下指令,在文本文档界面右击,选择粘贴</em></p>
 
-    #ifndef GDEXAMPLE_H
-    #define GDEXAMPLE_H
- 
-    #include <godot_cpp/classes/sprite2d.hpp>
- 
-    namespace godot
-    {
- 
-        class GDExample : public Sprite2D 
-        {
-	        GDCLASS(GDExample, Sprite2D)
- 
-        private:
-	        double time_passed;
- 
-        protected:
-	        static void _bind_methods();
- 
-        public:
-	        GDExample();
-	        ~GDExample();
- 
-    	void _process(double delta) override;
-        };
- 
-    }
- 
-    #endif
+```
+#ifndef GDEXAMPLE_H
+#define GDEXAMPLE_H
+
+#include <godot_cpp/classes/sprite2d.hpp>
+
+namespace godot {
+
+class GDExample : public Sprite2D {
+	GDCLASS(GDExample, Sprite2D)
+
+private:
+	double time_passed;
+
+protected:
+	static void _bind_methods();
+
+public:
+	GDExample();
+	~GDExample();
+
+	void _process(double delta) override;
+};
+
+}
+
+#endif
+```
 
 <em><p>文档界面左上角点"文件",点保存,然后对这个文本文档右键,重命名为gdexample.h</p>
 <p>同理创建其他三个文本文档,分别键入以下三块指令并保存,然后重命名,名字分别为gdexample.cpp、register_types.cpp、register_types.h</em></p>
@@ -336,98 +336,87 @@
 ```
 #include "gdexample.h"
 #include <godot_cpp/core/class_db.hpp>
- 
-using namespace godot;
- 
-void GDExample::_bind_methods() 
-{
-}
- 
-GDExample::GDExample()
-{
-    // Initialize any variables here.
-    time_passed = 0.0;
-}
-    
-GDExample::~GDExample()
-{
-    // Add your cleanup here.
-}
- 
-void GDExample::_process(double delta)
-{
-    time_passed += delta;
 
-    Vector2 new_position = Vector2(10.0 + (10.0 * sin(time_passed * 2.0)), 10.0 + (10.0 * cos(time_passed * 1.5)));
- 
-    set_position(new_position);
+using namespace godot;
+
+void GDExample::_bind_methods() {
+}
+
+GDExample::GDExample() {
+	// Initialize any variables here.
+	time_passed = 0.0;
+}
+
+GDExample::~GDExample() {
+	// Add your cleanup here.
+}
+
+void GDExample::_process(double delta) {
+	time_passed += delta;
+
+	Vector2 new_position = Vector2(10.0 + (10.0 * sin(time_passed * 2.0)), 10.0 + (10.0 * cos(time_passed * 1.5)));
+
+	set_position(new_position);
 }
 ```
 
 ```
 #include "register_types.h"
- 
+
 #include "gdexample.h"
- 
+
 #include <gdextension_interface.h>
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
- 
-using namespace godot;
- 
-void initialize_example_module(ModuleInitializationLevel p_level)
 
-{
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE)
-    {
+using namespace godot;
+
+void initialize_example_module(ModuleInitializationLevel p_level) {
+	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
- 
-	ClassDB::register_class<GDExample>();
+
+	GDREGISTER_RUNTIME_CLASS(GDExample);
 }
- 
-void uninitialize_example_module(ModuleInitializationLevel p_level)
-{
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE)
-    {
+
+void uninitialize_example_module(ModuleInitializationLevel p_level) {
+	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
 }
- 
-extern "C" 
-{
+
+extern "C" {
 // Initialization.
-    GDExtensionBool GDE_EXPORT example_library_init(GDExtensionInterfaceGetProcAddress p_get_proc_address, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization)
-    {
-	    godot::GDExtensionBinding::InitObject init_obj(p_get_proc_address, p_library, r_initialization);
- 
-	    init_obj.register_initializer(initialize_example_module);
-	    init_obj.register_terminator(uninitialize_example_module);
-	    init_obj.set_minimum_library_initialization_level(MODULE_INITIALIZATION_LEVEL_SCENE);
- 
-	    return init_obj.init();
-    }
+GDExtensionBool GDE_EXPORT example_library_init(GDExtensionInterfaceGetProcAddress p_get_proc_address, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization *r_initialization) {
+	godot::GDExtensionBinding::InitObject init_obj(p_get_proc_address, p_library, r_initialization);
+
+	init_obj.register_initializer(initialize_example_module);
+	init_obj.register_terminator(uninitialize_example_module);
+	init_obj.set_minimum_library_initialization_level(MODULE_INITIALIZATION_LEVEL_SCENE);
+
+	return init_obj.init();
+}
 }
 ```
 
 ```
 #ifndef GDEXAMPLE_REGISTER_TYPES_H
 #define GDEXAMPLE_REGISTER_TYPES_H
- 
+
 #include <godot_cpp/core/class_db.hpp>
- 
+
 using namespace godot;
- 
+
 void initialize_example_module(ModuleInitializationLevel p_level);
 void uninitialize_example_module(ModuleInitializationLevel p_level);
- 
+
 #endif // GDEXAMPLE_REGISTER_TYPES_H
 ```
 
 <em><p>继续去到cmd.exe,找到"空文件夹"下的godot-cpp文件夹的路径,复制了,在cmd.exe窗口里面输入cd /d,然后空格,然后粘贴,然后回车,然后输入scons,等待显示scons: done building targets.</p>
 <p>打开浏览器去https://docs.godotengine.org/zh-cn/4.x/_downloads/45a3f5e351266601b5e7663dc077fe12/SConstruct</p>
 <p>将这个下载好的东西右键复制,回到"空文件夹"窗口,右键粘贴,然后复制"空文件夹"路径,回到cmd.exe窗口,输入cd /d,然后空格,然后粘贴,然后回车,然后输入scons,等待显示scons: done building targets.</p>
-<p>接着,复制以下命令,在游戏项目文件夹内的bin文件夹页面右键,新建文本文档,粘贴</p>
+<p>接着,复制以下命令,在游戏项目文件夹内的bin文件夹页面右键,新建文本文档,粘贴,文档左上角文件选项里面点保存,然后出来右击文件图标,重命名输入gdexample.gdextension</p>
 
 ```
 [configuration]
